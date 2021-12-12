@@ -20,6 +20,27 @@ export class Room {
     this.renderer = renderer;
     this.setupCamera();
     this.setupScene();
+
+    renderer.domElement.addEventListener(
+      'click',
+      this.handleClick.bind(this),
+      true
+    );
+  }
+
+  handleClick({ x, y }) {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    mouse.set(
+      (x / window.innerWidth) * 2 - 1,
+      -(y / window.innerHeight) * 2 + 1
+    );
+    raycaster.setFromCamera(mouse, this.camera);
+
+    const intersects = raycaster.intersectObjects(this.scene.children, true); //array
+    if (intersects.length > 0) {
+      console.log('Intersection:', intersects[0]);
+    }
   }
 
   getScene() {
@@ -48,13 +69,13 @@ export class Room {
 
   setupCamera() {
     const camera = (this.camera = new THREE.PerspectiveCamera(
-      75,
+      23,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     ));
-    camera.position.z = 2.5;
-    camera.position.y = 2.5;
+    camera.position.z = 7;
+    camera.position.y = 7;
 
     const controls = (this.controls = new OrbitControls(
       camera,
@@ -65,12 +86,12 @@ export class Room {
     controls.minDistance = 2;
     controls.minAzimuthAngle = -Math.PI / 4;
     controls.maxAzimuthAngle = Math.PI / 4;
-    controls.target = new THREE.Vector3(0, 0.75, 0)
+    controls.target = new THREE.Vector3(0, 0.75, 0);
+    controls.update();
   }
 
   animate() {
     // this.cube.rotation.x += 0.01;
     // this.cube.rotation.y += 0.01;
-    this.controls.update();
   }
 }
