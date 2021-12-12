@@ -12,16 +12,20 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const environment = require('./config/environment');
 
-const templateFiles = fs.readdirSync(environment.paths.source)
+const templateFiles = fs
+  .readdirSync(environment.paths.source)
   .filter((file) => path.extname(file).toLowerCase() === '.html');
 
-const htmlPluginEntries = templateFiles.map((template) => new HTMLWebpackPlugin({
-  inject: true,
-  hash: false,
-  filename: template,
-  template: path.resolve(environment.paths.source, template),
-  // favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
-}));
+const htmlPluginEntries = templateFiles.map(
+  (template) =>
+    new HTMLWebpackPlugin({
+      inject: true,
+      hash: false,
+      filename: template,
+      template: path.resolve(environment.paths.source, template),
+      // favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
+    })
+);
 
 module.exports = {
   entry: {
@@ -35,7 +39,12 @@ module.exports = {
     rules: [
       {
         test: /\.((c|sa|sc)ss)$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.js$/,
@@ -99,19 +108,28 @@ module.exports = {
       verbose: true,
       cleanOnceBeforeBuildPatterns: ['**/*', '!stats.json'],
     }),
-    // Image inclusion
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: path.resolve(environment.paths.source, 'img'),
-    //       to: path.resolve(environment.paths.output, 'img'),
-    //       toType: 'dir',
-    //       globOptions: {
-    //         ignore: ['*.DS_Store', 'Thumbs.db'],
-    //       },
-    //     },
-    //   ],
-    // }),
+    new CopyWebpackPlugin({
+      patterns: [
+        // {
+        //   // Image inclusion
+        //   from: path.resolve(environment.paths.source, 'img'),
+        //   to: path.resolve(environment.paths.output, 'img'),
+        //   toType: 'dir',
+        //   globOptions: {
+        //     ignore: ['*.DS_Store', 'Thumbs.db'],
+        //   },
+        // },
+        {
+          // Model inclusion
+          from: path.resolve(environment.paths.source, 'models'),
+          to: path.resolve(environment.paths.output, 'models'),
+          toType: 'dir',
+          globOptions: {
+            ignore: ['*.DS_Store', 'Thumbs.db'],
+          },
+        },
+      ],
+    }),
   ].concat(htmlPluginEntries),
   target: 'web',
 };

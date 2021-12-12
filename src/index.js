@@ -1,12 +1,29 @@
-import _ from 'lodash';
+import * as THREE from 'three';
 
-function component() {
-  const element = document.createElement('div');
+import { Room } from './components/Room';
 
-  // Lodash, now imported by this script
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+import './index.scss';
 
-  return element;
+function setupRenderer() {
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.physicallyCorrectLights = true;
+  renderer.shadowMap.enabled = true;
+  document.getElementById('scene-renderer').appendChild(renderer.domElement);
+
+  const room = new Room(renderer);
+  const scene = room.getScene();
+  const camera = room.getCamera();
+
+  const animate = function () {
+    requestAnimationFrame(animate);
+
+    room.animate();
+
+    renderer.render(scene, camera);
+  };
+
+  animate();
 }
 
-document.body.appendChild(component());
+window.addEventListener('load', setupRenderer);
